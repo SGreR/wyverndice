@@ -43,8 +43,8 @@ public class DiceSetService {
 
     public List<DiceSet> filterByName(String name){
         List<DiceSet> all = getAll();
-        List<DiceSet> result = all.stream().filter(diceSet -> diceSet.getName().startsWith(name)).toList();
-        return result;
+        return all.stream().filter(diceSet -> diceSet.getName().startsWith(name)).toList();
+
     }
 
     public void deleteById(int id){

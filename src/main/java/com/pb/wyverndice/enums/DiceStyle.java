@@ -1,5 +1,8 @@
 package com.pb.wyverndice.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum DiceStyle {
     SOLID(1),
     MARBLED(1.15),
@@ -12,7 +15,4 @@ public enum DiceStyle {
         this.multiplier = multiplier;
     }
 
-    public double getMultiplier() {
-        return multiplier;
-    }
 }

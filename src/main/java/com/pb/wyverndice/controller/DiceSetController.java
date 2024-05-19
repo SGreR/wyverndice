@@ -48,7 +48,6 @@ public class DiceSetController {
 
     @PostMapping
     public ResponseEntity<MessagePayload> save(@RequestBody DiceSet diceSet){
-        var set = diceSet;
         diceSetService.save(diceSet);
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
     }

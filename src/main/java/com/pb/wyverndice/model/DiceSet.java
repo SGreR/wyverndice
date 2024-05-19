@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
         property = "type"
 )
 @JsonSubTypes({
@@ -20,10 +19,6 @@ public abstract class DiceSet {
     int id;
     String name;
     List<Die> dice;
-
-    public double getPrice() {
-        return calculatePrice();
-    }
 
     double price;
 
