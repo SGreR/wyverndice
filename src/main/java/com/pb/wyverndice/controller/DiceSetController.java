@@ -4,7 +4,6 @@ import com.pb.wyverndice.exception.ResourceNotFoundException;
 import com.pb.wyverndice.model.DiceSet;
 import com.pb.wyverndice.payload.MessagePayload;
 import com.pb.wyverndice.service.DiceSetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,7 @@ import java.util.Optional;
 @RequestMapping("/diceset")
 public class DiceSetController {
 
-    @Autowired
-    private DiceSetService diceSetService;
+    private final DiceSetService diceSetService;
 
     public DiceSetController(DiceSetService diceSetService) {
         this.diceSetService = diceSetService;

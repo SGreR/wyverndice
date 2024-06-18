@@ -3,7 +3,6 @@ package com.pb.wyverndice.service;
 import com.pb.wyverndice.model.DiceSet;
 import com.pb.wyverndice.model.PremadeDiceSet;
 import com.pb.wyverndice.repository.DiceSetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -11,8 +10,11 @@ import java.util.*;
 @Service
 public class DiceSetService {
 
-    @Autowired
-    private DiceSetRepository diceSetRepository;
+    private final DiceSetRepository diceSetRepository;
+
+    public DiceSetService(DiceSetRepository diceSetRepository) {
+        this.diceSetRepository = diceSetRepository;
+    }
 
     public List<DiceSet> getAllDiceSets(){
         return diceSetRepository.findAll();

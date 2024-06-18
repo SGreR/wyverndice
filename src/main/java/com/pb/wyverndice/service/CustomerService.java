@@ -1,19 +1,31 @@
 package com.pb.wyverndice.service;
 
+import com.pb.wyverndice.filters.CustomerFilters;
 import com.pb.wyverndice.model.Customer;
 import com.pb.wyverndice.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CustomerService {
-    @Autowired
-    private CustomerRepository customerRepository;
+
+    private final CustomerRepository customerRepository;
+
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
 
     public List<Customer> getAllCustomers(){
         return customerRepository.findAll();
+    }
+
+    public List<Customer> getAllCustomersByName(CustomerFilters filters){
+        return customerRepository.findAllByName(filters.getName().orElse(null), filters.getEmail().orElse(null));
+    }
+
+    public List<Customer> getAllCustomersByRole(CustomerFilters filters){
+        return customerRepository.findAllByRoles(filters.getRole().get());
     }
 
     public Customer getCustomerById(Long id){

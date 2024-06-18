@@ -1,10 +1,10 @@
 package com.pb.wyverndice.controller;
 
 import com.pb.wyverndice.exception.ResourceNotFoundException;
+import com.pb.wyverndice.filters.CustomerFilters;
 import com.pb.wyverndice.model.Customer;
 import com.pb.wyverndice.payload.MessagePayload;
 import com.pb.wyverndice.service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +16,22 @@ import java.util.Map;
 @RequestMapping("/customer")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAll(){
-        return ResponseEntity.ok(customerService.getAllCustomers());
+    public ResponseEntity<List<Customer>> getAll(@ModelAttribute CustomerFilters filters){
+        if (filters.getRole().isPresent()){
+            return ResponseEntity.ok(customerService.getAllCustomersByRole(filters));
+        }
+        else if (filters.getName().isPresent() || filters.getEmail().isPresent()) {
+            return ResponseEntity.ok(customerService.getAllCustomersByName(filters));
+        } else {
+            return ResponseEntity.ok(customerService.getAllCustomers());
+        }
     }
 
     @GetMapping("/{id}")
