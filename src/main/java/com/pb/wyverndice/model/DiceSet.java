@@ -1,9 +1,13 @@
 package com.pb.wyverndice.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,30 +19,34 @@ import java.util.List;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = PremadeDiceSet.class, name = "premade"),
 })
-public abstract class DiceSet {
-    int id;
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class DiceSet implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+    private double price;
     String name;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "diceset_id")
+    @JsonManagedReference
     List<Die> dice;
 
-    double price;
-
     public DiceSet(){
-        this.id = 0;
         this.name = "DiceSet";
         this.dice = new ArrayList<>();
     }
 
-    public DiceSet(int id, String name) {
-        this.id = id;
+    public DiceSet(String name) {
         this.name = name;
         this.dice = new ArrayList<>();
     }
 
-    public DiceSet(int id, String name, List<Die> dice) {
-        this.id = id;
+    public DiceSet(String name, List<Die> dice) {
         this.name = name;
         this.dice = dice;
     }
 
+    @PostConstruct
     protected abstract double calculatePrice();
 }

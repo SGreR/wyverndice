@@ -4,39 +4,39 @@ import com.pb.wyverndice.enums.DiceStyle;
 import com.pb.wyverndice.enums.NumberOfDice;
 import com.pb.wyverndice.enums.NumberOfSides;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.*;
 import lombok.Data;
 
 
 import java.util.*;
 
 @Data
+@Entity
 public class PremadeDiceSet extends DiceSet {
 
+    @ElementCollection
+    @CollectionTable(name = "premade_dice_set_colors", joinColumns = @JoinColumn(name = "premade_dice_set_id"))
+    @MapKeyColumn(name = "color_key")
+    @Column(name = "color_value")
     private Map<String, String> colors = new HashMap<>();
     {
         colors.put("Main", "Black");
     }
     private String numberColors = "White";
     private DiceStyle style = DiceStyle.SOLID;
-
     private NumberOfDice numberOfDice;
+
+    public PremadeDiceSet(){
+        this.numberOfDice = NumberOfDice.EIGHT;
+        this.dice = new ArrayList<>();
+        this.setPrice(this.calculatePrice());
+    }
 
     public PremadeDiceSet(NumberOfDice numberOfDice) {
         this.numberOfDice = numberOfDice;
         this.dice = new ArrayList<>();
-        createSet(this.numberOfDice.getValue());
-    }
-
-    public PremadeDiceSet(){
-        this.numberOfDice = NumberOfDice.EIGHT;
-        this.colors = new HashMap<>();
-        {
-            colors.put("Main", "Black");
-        }
-        this.numberColors = "White";
-        this.style = DiceStyle.SOLID;
-        this.dice = new ArrayList<>();
-        createSet(this.numberOfDice.getValue());
+        createSet();
+        this.setPrice(this.calculatePrice());
     }
 
     public PremadeDiceSet(Map<String, String> colors, String numberColors, DiceStyle style, NumberOfDice numberOfDice) {
@@ -45,47 +45,50 @@ public class PremadeDiceSet extends DiceSet {
         this.style = style;
         this.numberOfDice = numberOfDice;
         this.dice = new ArrayList<>();
-        createSet(this.numberOfDice.getValue());
+        createSet();
+        this.setPrice(this.calculatePrice());
     }
 
-    public PremadeDiceSet(int id, String name, Map<String, String> colors, String numberColors, DiceStyle style, NumberOfDice numberOfDice) {
-        super(id, name);
+    public PremadeDiceSet(String name, Map<String, String> colors, String numberColors, DiceStyle style, NumberOfDice numberOfDice) {
+        super(name);
         this.colors = colors;
         this.numberColors = numberColors;
         this.style = style;
         this.numberOfDice = numberOfDice;
         this.dice = new ArrayList<>();
-        createSet(this.numberOfDice.getValue());
+        createSet();
+        this.setPrice(this.calculatePrice());
     }
 
-    public PremadeDiceSet(int id, String name, List<Die> dice, Map<String, String> colors, String numberColors, DiceStyle style, NumberOfDice numberOfDice) {
-        super(id, name, dice);
+    public PremadeDiceSet(String name, List<Die> dice, Map<String, String> colors, String numberColors, DiceStyle style, NumberOfDice numberOfDice) {
+        super(name, dice);
         this.colors = colors;
         this.numberColors = numberColors;
         this.style = style;
         this.numberOfDice = numberOfDice;
         this.dice = new ArrayList<>();
-        createSet(this.numberOfDice.getValue());
+        createSet();
+        this.setPrice(this.calculatePrice());
     }
 
-    private void createSet(int numberOfDiceValue){
-        if(numberOfDiceValue != dice.size()){
-            this.dice.clear();
-            if (numberOfDiceValue == 10) {
-                this.dice.add(new Die(NumberOfSides.TWO));
-                this.dice.add(new Die(NumberOfSides.TWENTY));
-            }
+    public void createSet(){
+        if (this.numberOfDice.getValue() == 10) {
             this.dice.add(new Die(NumberOfSides.TWO));
-            this.dice.add(new Die(NumberOfSides.FOUR));
-            this.dice.add(new Die(NumberOfSides.SIX));
-            this.dice.add(new Die(NumberOfSides.EIGHT));
-            this.dice.add(new Die(NumberOfSides.TEN));
-            this.dice.add(new Die(NumberOfSides.PERCENTILE));
-            this.dice.add(new Die(NumberOfSides.TWELVE));
             this.dice.add(new Die(NumberOfSides.TWENTY));
-            this.dice.sort(Comparator.comparing(d -> d.getSides().ordinal()));
-            setDiceColors();
         }
+        this.dice.add(new Die(NumberOfSides.TWO));
+        this.dice.add(new Die(NumberOfSides.FOUR));
+        this.dice.add(new Die(NumberOfSides.SIX));
+        this.dice.add(new Die(NumberOfSides.EIGHT));
+        this.dice.add(new Die(NumberOfSides.TEN));
+        this.dice.add(new Die(NumberOfSides.PERCENTILE));
+        this.dice.add(new Die(NumberOfSides.TWELVE));
+        this.dice.add(new Die(NumberOfSides.TWENTY));
+        this.dice.sort(Comparator.comparing(d -> d.getSides().ordinal()));
+        for (Die dice : this.dice){
+            dice.setDiceSet(this);
+        }
+        setDiceColors();
     }
 
     @PostConstruct
@@ -97,7 +100,7 @@ public class PremadeDiceSet extends DiceSet {
         }
     }
 
-    public double getPrice() {
+    public double getPrice(){
         return calculatePrice();
     }
 
@@ -132,10 +135,5 @@ public class PremadeDiceSet extends DiceSet {
     public void setNumberColors(String numberColors) {
         this.numberColors = numberColors;
         this.setDiceColors();
-    }
-
-    public void setNumberOfDice(NumberOfDice numberOfDice) {
-        this.numberOfDice = numberOfDice;
-        this.createSet(this.numberOfDice.getValue());
     }
 }

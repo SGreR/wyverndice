@@ -1,9 +1,9 @@
 package com.pb.wyverndice.controller;
 
 import com.pb.wyverndice.exception.ResourceNotFoundException;
-import com.pb.wyverndice.model.DiceSet;
+import com.pb.wyverndice.model.Customer;
 import com.pb.wyverndice.payload.MessagePayload;
-import com.pb.wyverndice.service.DiceSetService;
+import com.pb.wyverndice.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,37 +11,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/diceset")
-public class DiceSetController {
+@RequestMapping("/customer")
+public class CustomerController {
 
     @Autowired
-    private DiceSetService diceSetService;
+    private CustomerService customerService;
 
-    public DiceSetController(DiceSetService diceSetService) {
-        this.diceSetService = diceSetService;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @GetMapping
-    public ResponseEntity<List<DiceSet>> getAll(@RequestParam(required = false) Optional<String> name){
-        if(name.isEmpty()){
-            return ResponseEntity.ok(diceSetService.getAllDiceSets());
-        }else {
-            List<DiceSet> diceSets = diceSetService.filterDiceSetByName(name.get());
-            if(diceSets.isEmpty()){
-                return ResponseEntity.notFound().build();
-            }else{
-                return ResponseEntity.ok(diceSets);
-            }
-        }
+    public ResponseEntity<List<Customer>> getAll(){
+        return ResponseEntity.ok(customerService.getAllCustomers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id){
         try{
-            DiceSet encontrado = diceSetService.getDiceSetById(id);
+            Customer encontrado = customerService.getCustomerById(id);
             return ResponseEntity.ok(encontrado);
         }catch (ResourceNotFoundException ex){
             Map<String, String> message = Map.of("Message", ex.getMessage());
@@ -50,15 +40,15 @@ public class DiceSetController {
     }
 
     @PostMapping
-    public ResponseEntity<MessagePayload> save(@RequestBody DiceSet diceSet){
-        diceSetService.createDiceSet(diceSet);
+    public ResponseEntity<MessagePayload> save(@RequestBody Customer customer){
+        customerService.createCustomer(customer);
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MessagePayload> update(@PathVariable Long id, @RequestBody DiceSet diceSet){
+    public ResponseEntity<MessagePayload> update(@PathVariable Long id, @RequestBody Customer customer){
         try {
-            diceSetService.updateDiceSet(id,diceSet);
+            customerService.updateCustomer(id, customer);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Atualizado com sucesso"));
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
@@ -68,12 +58,10 @@ public class DiceSetController {
     @DeleteMapping("/{id}")
     public ResponseEntity<MessagePayload> delete(@PathVariable Long id){
         try {
-            diceSetService.deleteDiceSetById(id);
+            customerService.deleteCustomerById(id);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Deletado com sucesso"));
         }catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
         }
     }
-
-
 }
