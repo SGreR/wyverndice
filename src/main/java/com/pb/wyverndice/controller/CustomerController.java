@@ -47,8 +47,15 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<MessagePayload> save(@RequestBody Customer customer){
-        customerService.createCustomer(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
+        try{
+            customerService.createCustomer(customer);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
+        }catch (Exception ex){
+            String message = ex.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessagePayload(message));
+        }
+
+
     }
 
     @PutMapping("/{id}")

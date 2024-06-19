@@ -1,7 +1,9 @@
 package com.pb.wyverndice.service;
 
+import com.pb.wyverndice.model.DBLog;
 import com.pb.wyverndice.model.DiceSet;
 import com.pb.wyverndice.model.PremadeDiceSet;
+import com.pb.wyverndice.repository.DBLogRepository;
 import com.pb.wyverndice.repository.DiceSetRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,11 @@ import java.util.*;
 public class DiceSetService {
 
     private final DiceSetRepository diceSetRepository;
+    private final DBLogRepository logRepository;
 
-    public DiceSetService(DiceSetRepository diceSetRepository) {
+    public DiceSetService(DiceSetRepository diceSetRepository, DBLogRepository dbLogRepository) {
         this.diceSetRepository = diceSetRepository;
+        this.logRepository = dbLogRepository;
     }
 
     public List<DiceSet> getAllDiceSets(){
@@ -25,7 +29,9 @@ public class DiceSetService {
     }
 
     public DiceSet createDiceSet(DiceSet diceSet){
-        return diceSetRepository.save(diceSet);
+        DiceSet createdSet = diceSetRepository.save(diceSet);
+        logRepository.save(new DBLog(DiceSet.class.getName(), createdSet.id, "Created"));
+        return createdSet;
     }
 
     public List<DiceSet> filterDiceSetByName(String name){
@@ -39,18 +45,16 @@ public class DiceSetService {
 
     public void deleteDiceSetById(Long id){
         diceSetRepository.deleteById(id);
+        logRepository.save(new DBLog(DiceSet.class.getName(), id, "Deleted"));
     }
 
     public void updateDiceSet(Long id, DiceSet newDiceSet) {
         PremadeDiceSet newSet = (PremadeDiceSet) newDiceSet;
         PremadeDiceSet diceSet = (PremadeDiceSet) diceSetRepository.findById(id).orElse(null);
         if (diceSet != null) {
-            diceSet.setName(newSet.getName());
-            diceSet.setColors(newSet.getColors());
-            diceSet.setNumberColors(newSet.getNumberColors());
-            diceSet.setStyle(newSet.getStyle());
-            diceSet.setNumberOfDice(newSet.getNumberOfDice());
-            diceSetRepository.save(diceSet);
+            newSet.setId(id);
+            diceSetRepository.save(newSet);
+            logRepository.save(new DBLog(DiceSet.class.getName(), id, "Updated"));
         }
     }
 

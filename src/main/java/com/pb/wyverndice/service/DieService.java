@@ -1,12 +1,14 @@
 package com.pb.wyverndice.service;
 
 import com.pb.wyverndice.filters.DieFilters;
+import com.pb.wyverndice.model.Customer;
+import com.pb.wyverndice.model.DBLog;
 import com.pb.wyverndice.model.Die;
+import com.pb.wyverndice.repository.DBLogRepository;
 import com.pb.wyverndice.repository.DieRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 @Service
@@ -14,10 +16,12 @@ public class DieService {
 
     private final DieRepository dieRepository;
     private final EntityManager entityManager;
+    private final DBLogRepository logRepository;
 
-    public DieService(DieRepository dieRepository, EntityManager entityManager) {
+    public DieService(DieRepository dieRepository, EntityManager entityManager, DBLogRepository logRepository) {
         this.dieRepository = dieRepository;
         this.entityManager = entityManager;
+        this.logRepository = logRepository;
     }
 
     public List<Die> getAllDice(){
@@ -58,27 +62,26 @@ public class DieService {
         }
 
         cq.where(predicates.toArray(Predicate[]::new));
-        List<Die> resultList = entityManager.createQuery(cq).getResultList();
-        return resultList;
+        return entityManager.createQuery(cq).getResultList();
     }
 
     public Die createDie(Die die){
-        return dieRepository.save(die);
+        Die createdDie = dieRepository.save(die);
+        logRepository.save(new DBLog(Die.class.getName(), createdDie.getId(), "Created"));
+        return createdDie;
     }
 
     public void deleteDieById(Long id){
         dieRepository.deleteById(id);
+        logRepository.save(new DBLog(Die.class.getName(), id, "Deleted"));
     }
 
     public void updateDie(Long id, Die newDie) {
         Die die = dieRepository.findById(id).orElse(null);
         if (die != null) {
-            die.setSides(newDie.getSides());
-            die.setStyle(newDie.getStyle());
-            die.setColors(newDie.getColors());
-            die.setNumberColors(newDie.getNumberColors());
-            die.setDiceSet(newDie.getDiceSet());
-            dieRepository.save(die);
+            newDie.setId(id);
+            dieRepository.save(newDie);
+            logRepository.save(new DBLog(Customer.class.getName(), id, "Updated"));
         }
     }
 

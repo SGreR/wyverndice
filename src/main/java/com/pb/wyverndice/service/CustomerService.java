@@ -2,7 +2,9 @@ package com.pb.wyverndice.service;
 
 import com.pb.wyverndice.filters.CustomerFilters;
 import com.pb.wyverndice.model.Customer;
+import com.pb.wyverndice.model.DBLog;
 import com.pb.wyverndice.repository.CustomerRepository;
+import com.pb.wyverndice.repository.DBLogRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final DBLogRepository logRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, DBLogRepository logRepository) {
         this.customerRepository = customerRepository;
+        this.logRepository = logRepository;
     }
 
     public List<Customer> getAllCustomers(){
@@ -33,21 +37,22 @@ public class CustomerService {
     }
 
     public Customer createCustomer(Customer customer){
-        return customerRepository.save(customer);
+        Customer createdCustomer = customerRepository.save(customer);
+        logRepository.save(new DBLog(Customer.class.getName(), createdCustomer.getId(), "Created"));
+        return createdCustomer;
     }
 
     public void deleteCustomerById(Long id){
         customerRepository.deleteById(id);
+        logRepository.save(new DBLog(Customer.class.getName(), id, "Deleted"));
     }
 
     public void updateCustomer(Long id, Customer newCustomer) {
         Customer customer = customerRepository.findById(id).orElse(null);
         if (customer != null) {
-            customer.setName(newCustomer.getName());
-            customer.setEmail(newCustomer.getEmail());
-            customer.setPassword(newCustomer.getPassword());
-            customer.setRole(newCustomer.getRole());
-            customerRepository.save(customer);
+            newCustomer.setId(id);
+            customerRepository.save(newCustomer);
+            logRepository.save(new DBLog(Customer.class.getName(), id, "Updated"));
         }
     }
 }
