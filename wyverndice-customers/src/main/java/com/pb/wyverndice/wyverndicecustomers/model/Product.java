@@ -9,10 +9,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-@Entity
 public class Product implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     private double price;
 }

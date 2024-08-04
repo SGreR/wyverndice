@@ -13,8 +13,7 @@
     </properties>
     <modules>
         <module>wyverndice-customers</module>
-        <module>wyverndice-diceset</module>
-        <module>wyverndice-die</module>
+        <module>wyverndice-dice</module>
         <module>wyverndice-purchases</module>
     </modules>
     <dependencyManagement>
@@ -40,6 +39,9 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 

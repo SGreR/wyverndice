@@ -1,6 +1,5 @@
 package com.pb.wyverndice.wyverndicepurchases.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,10 +30,46 @@ public class Purchase implements Serializable {
     }
 
     public double getPurchasePrice(){
-        return this.products.stream().mapToDouble(Product::getPrice).sum();
+        return calculatePurchasePrice();
+    }
+
+    public void setPurchasePrice(){
+        this.purchasePrice = calculatePurchasePrice();
+    }
+
+    public double getDeliveryFee(){
+        return calculateDeliveryFee();
+    }
+
+    public void setDeliveryFee(){
+        this.deliveryFee = calculateDeliveryFee();
     }
 
     public double getFinalPrice() {
+        return calculateFinalPrice();
+    }
+
+    public void setFinalPrice() {
+        this.finalPrice = calculateFinalPrice();
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void setPrices(){
+        setPurchasePrice();
+        setDeliveryFee();
+        setFinalPrice();
+    }
+
+    public double calculatePurchasePrice(){
+        return this.products.stream().mapToDouble(Product::getPrice).sum();
+    }
+
+    public double calculateFinalPrice(){
         return getPurchasePrice() + getDeliveryFee();
+    }
+
+    public double calculateDeliveryFee(){
+        return 0.0;
     }
 }

@@ -11,18 +11,12 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Entity
 @NoArgsConstructor
 public class Purchase implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
-    @Transient
     private Customer customer = null;
     private Long customerId = null;
-    @ElementCollection
     private Set<Long> productIds = new HashSet<>();
-    @Transient
     private List<Product> products = new ArrayList<>();
     private double purchasePrice = 0.0;
     private double deliveryFee = 0.0;

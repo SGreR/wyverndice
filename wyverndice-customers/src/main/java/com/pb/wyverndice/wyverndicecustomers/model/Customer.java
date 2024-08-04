@@ -19,10 +19,10 @@ public class Customer implements Serializable {
     private String email;
     private String password;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Address> addresses = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @Transient
     private List<Purchase> purchases = new ArrayList<>();
 }

@@ -1,5 +1,6 @@
 package com.pb.wyverndice.wyverndicecustomers.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class Address {
     private String country;
     private String zipCode;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
     private Customer customer;
 }
