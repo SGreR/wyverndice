@@ -33,7 +33,7 @@ public class DiceSetServiceTests {
     public void testInsertDiceSet(){
         List<DiceSet> all = diceSetService.getAllDiceSets();
         int initialState = all.size();
-        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), ProductType.PREMADE, listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT, 0.0);
+        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT);
         diceSet.setId(initialState + 1L);
         diceSetService.createDiceSet(diceSet);
         all = diceSetService.getAllDiceSets();
@@ -44,8 +44,8 @@ public class DiceSetServiceTests {
     @Test
     @DisplayName("Deve deletar um conjunto de dados do banco")
     public void testDeleteDiceSet(){
-        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), ProductType.PREMADE, listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT, 0.0);
-        diceSet.setId(5L);
+        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT);
+        diceSet.setId(1L);
         diceSetService.createDiceSet(diceSet);
         List<DiceSet> all = diceSetService.getAllDiceSets();
         int initialState = all.size();
@@ -62,7 +62,7 @@ public class DiceSetServiceTests {
     @Test
     @DisplayName("Deve retornar um conjunto de dados pelo ID")
     public void testGetDiceSetById(){
-        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), ProductType.PREMADE, listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT, 0.0);
+        DiceSet diceSet = new DiceSet("Classic Set", new ArrayList<>(), listOf(Colors.BLACK), Colors.GOLD, DiceStyle.SOLID, NumberOfDice.EIGHT);
         diceSet = diceSetService.createDiceSet(diceSet);
         DiceSet diceSetInDb = diceSetService.getDiceSetById(diceSet.getId());
         assertNotNull(diceSetInDb);

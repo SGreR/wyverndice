@@ -24,7 +24,6 @@ public class DiceSet extends Product {
     @JoinColumn(name = "diceset_id")
     @JsonManagedReference
     List<Die> dice = new ArrayList<>();
-    private ProductType type = ProductType.PREMADE;
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private List<Colors> colors = new ArrayList<>(listOf(Colors.BLACK));
@@ -34,10 +33,9 @@ public class DiceSet extends Product {
     private DiceStyle style = DiceStyle.SOLID;
     @Enumerated(EnumType.STRING)
     private NumberOfDice numberOfDice = NumberOfDice.EIGHT;
-    private double price;
 
     public void populateDice(){
-        if(type == ProductType.PREMADE && dice.isEmpty()){
+        if(this.type == ProductType.PREMADE && (dice.isEmpty() || dice.size() < numberOfDice.getValue())){
             dice = listOf(
                     new Die(NumberOfSides.TWENTY),
                     new Die(NumberOfSides.TWELVE),
@@ -71,16 +69,24 @@ public class DiceSet extends Product {
         }
     }
 
-    public double getPrice(){
-        return calculatePrice();
+    @PreUpdate
+    @PrePersist
+    private void setInfo(){
+        setType();
+        populateDice();
+        setPrice();
+
     }
 
-    @PrePersist
-    @PreUpdate
-    public void setPrice(){
+    private void setPrice(){
         this.price = calculatePrice();
     }
 
+    private void setType(){
+        this.type = ProductType.PREMADE;
+    }
+
+    @Override
     protected double calculatePrice() {
         if(dice.isEmpty()){
             return 0;
@@ -111,10 +117,5 @@ public class DiceSet extends Product {
     public void setNumberColors(Colors numberColor) {
         this.numberColor = numberColor;
         this.setDiceColors();
-    }
-
-    public void setId(Long id){
-        this.id = id;
-        this.setDiceInfo();
     }
 }

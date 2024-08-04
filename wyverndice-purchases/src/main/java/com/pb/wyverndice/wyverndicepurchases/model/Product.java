@@ -17,5 +17,5 @@ import java.io.Serializable;
 public class Product implements Serializable {
     public Long id;
     private ProductType type;
-    private double price;
+    private double price = 0.0;
 }

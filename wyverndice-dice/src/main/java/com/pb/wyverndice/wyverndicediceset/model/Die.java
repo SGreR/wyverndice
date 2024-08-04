@@ -24,7 +24,6 @@ import static org.hibernate.internal.util.collections.CollectionHelper.listOf;
 @NoArgsConstructor
 public class Die extends Product implements Serializable {
 
-    private ProductType type = ProductType.DIE;
     @Enumerated(EnumType.STRING)
     private NumberOfSides sides = NumberOfSides.TWENTY;
     @ElementCollection
@@ -37,21 +36,28 @@ public class Die extends Product implements Serializable {
     @JoinColumn(name = "diceset_id")
     @JsonBackReference
     private DiceSet diceSet = null;
-    private double price;
 
     public Die(NumberOfSides sides){
         this.sides = sides;
     }
 
-    public double getPrice(){
-        return calculatePrice();
-    }
 
     @PreUpdate
     @PrePersist
-    public void setPrice(){
+    private void setInfo(){
+        setPrice();
+        setType();
+    }
+
+    private void setPrice(){
         this.price = calculatePrice();
     }
+
+    private void setType(){
+        this.type = ProductType.DIE;
+    }
+
+    @Override
     protected double calculatePrice(){
         double price = 0;
         double basePrice = sides.getSides() * 1.75;

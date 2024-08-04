@@ -7,12 +7,21 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     @Enumerated(EnumType.STRING)
-    private ProductType type;
-    private double price = 0.0;
+    protected ProductType type;
+    protected double price;
+
+    public double getPrice(){
+        return calculatePrice();
+    }
+
+    protected double calculatePrice() {
+        return 0.0;
+    }
 }
